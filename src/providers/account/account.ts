@@ -41,8 +41,10 @@ export class AccountProvider {
   }
 
   public getUserType() {
+    // Pego o tipo do usuario logado
     return this.db.object(this.PATH + this.auth.auth.currentUser.uid)
       .snapshotChanges().map(changes => {
+        // retorno apenas a propriedade userType
         return changes.payload.val().userType;
       });
   }
