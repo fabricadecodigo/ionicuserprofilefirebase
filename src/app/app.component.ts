@@ -1,10 +1,14 @@
+import { AngularFireAuth } from 'angularfire2/auth';
+import { AccountProvider } from './../providers/account/account';
+import { SignupPage } from './../pages/signup/signup';
+import { SigninPage } from './../pages/signin/signin';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   templateUrl: 'app.html'
@@ -12,19 +16,17 @@ import { ListPage } from '../pages/list/list';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = HomePage;
+  rootPage: any = 'HomePage';
+  pages: Array<{ title: string, component: string, openNew: boolean, visible: boolean }>;
+  userType: number = 0; // Anonimo
 
-  pages: Array<{title: string, component: any}>;
+  constructor(public platform: Platform, public statusBar: StatusBar,
+    public splashScreen: SplashScreen, private accountProvider: AccountProvider,
+    public auth: AngularFireAuth) {
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
     this.initializeApp();
-
-    // used for an example of ngFor and navigation
-    this.pages = [
-      { title: 'Home', component: HomePage },
-      { title: 'List', component: ListPage }
-    ];
-
+    this.handlerUserType();
+    this.createMenu();
   }
 
   initializeApp() {
@@ -36,9 +38,50 @@ export class MyApp {
     });
   }
 
+  createMenu() {
+    // used for an example of ngFor and navigation
+    this.pages = [
+      // Visivel para todos
+      { title: 'Home', component: 'HomePage', openNew: false, visible: this.userType >= 0 },
+
+      // Visivel some para administradores
+      { title: 'Admin 1', component: null, openNew: false, visible: this.userType == 2 },
+      { title: 'Admin 2', component: null, openNew: false, visible: this.userType == 2 },
+
+      // Visivel para outros usuarios e administradores
+      { title: 'User comum 1', component: null, openNew: false, visible: this.userType >= 1 },
+      { title: 'User comum 2', component: null, openNew: false, visible: this.userType >= 1 },
+
+      { title: 'Login', component: 'SigninPage', openNew: true, visible: this.userType >= 0 },
+      { title: 'Criar conta', component: 'SignupPage', openNew: true, visible: this.userType >= 0 }
+    ];
+  }
+
   openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
-    this.nav.setRoot(page.component);
+    if (page.openNew) {
+      this.nav.push(page.component);
+    } else {
+      this.nav.setRoot(page.component);
+    }
+  }
+
+  handlerUserType() {
+
+    this.auth.authState.subscribe(user => {
+      if (user) { // Usuario logado
+        let userTypeSubscribe =this.accountProvider.getUserType().subscribe((userType: number) => {
+          this.userType = userType;
+          this.createMenu();
+          userTypeSubscribe.unsubscribe();
+        })
+      } else { // Usuario deslogado
+        this.userType = 0;
+        this.createMenu();
+      }
+    });
+  }
+
+  logout() {
+    this.accountProvider.signOut();
   }
 }

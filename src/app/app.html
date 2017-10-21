@@ -7,8 +7,11 @@
 
   <ion-content>
     <ion-list>
-      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
+      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)" [hidden]="!p.visible">
         {{p.title}}
+      </button>
+      <button menuClose ion-item (click)="logout()" [hidden]="userType == 0">
+        Sair
       </button>
     </ion-list>
   </ion-content>

@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Criar conta</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <form [formGroup]="form">
+    <ion-item>
+      <ion-label stacked>Tipo de usuário</ion-label>
+      <ion-select formControlName="userType">
+        <ion-option value="" [selected]="true">- Escolha -</ion-option>
+        <ion-option value="1">Usuario comum</ion-option>
+        <ion-option value="2">Administrador</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item *ngIf="!form.controls.userType.valid && (form.controls.userType.dirty || form.controls.userType.touched)" color="danger">
+      <div [hidden]="!form.controls.userType.errors.required">
+        O campo é obrigatório
+      </div>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked>E-mail</ion-label>
+      <ion-input type="email" formControlName="email"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="!form.controls.email.valid && (form.controls.email.dirty || form.controls.email.touched)" color="danger">
+      <div [hidden]="!form.controls.email.errors.required">
+        O campo é obrigatório
+      </div>
+      <div [hidden]="!form.controls.email.errors.email">
+        O e-mail é invalido
+      </div>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked>Senha</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="!form.controls.password.valid && (form.controls.password.dirty || form.controls.password.touched)" color="danger">
+      <div [hidden]="!form.controls.password.errors.required">
+        O campo é obrigatório
+      </div>
+    </ion-item>
+
+    <div padding>
+      <button ion-button block type="submit" [disabled]="!form.valid" (click)="onSubmit()">Criar conta</button>
+    </div>
+  </form>
+</ion-content>
