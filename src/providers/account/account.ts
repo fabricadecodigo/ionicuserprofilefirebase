@@ -15,7 +15,11 @@ export class AccountProvider {
       this.auth.auth.createUserWithEmailAndPassword(user.email, user.password)
         .then((firebaseUser: firebase.User) => {
           // Criando o profile do usuario
-          this.db.object(this.PATH + firebaseUser.uid).set({ userType: user.userType });
+          this.db.object(this.PATH + firebaseUser.uid).set({
+            userType: user.userType,
+            name: user.name,
+            cpf: user.cpf
+          });
           resolve();
         })
         .catch(e => {
@@ -45,7 +49,15 @@ export class AccountProvider {
     return this.db.object(this.PATH + this.auth.auth.currentUser.uid)
       .snapshotChanges().map(changes => {
         // retorno apenas a propriedade userType
-        return changes.payload.val().userType;
+        return changes.payload.val().userType || 0;
+      });
+  }
+
+  getUserInfo() {
+    return this.db.object(this.PATH + this.auth.auth.currentUser.uid)
+      .snapshotChanges()
+      .map(changes => {
+        return { key: changes.key, ...changes.payload.val() };
       });
   }
 }

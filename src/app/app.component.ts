@@ -55,8 +55,8 @@ export class MyApp {
       { title: 'User comum 2', component: null, openNew: false, visible: this.userType >= 1 },
 
       // Visivel para todos
-      { title: 'Login', component: 'SigninPage', openNew: true, visible: this.userType >= 0 },
-      { title: 'Criar conta', component: 'SignupPage', openNew: true, visible: this.userType >= 0 }
+      { title: 'Login', component: 'SigninPage', openNew: true, visible: true },
+      { title: 'Criar conta', component: 'SignupPage', openNew: true, visible: true }
     ];
   }
 

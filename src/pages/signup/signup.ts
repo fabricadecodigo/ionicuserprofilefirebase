@@ -19,8 +19,10 @@ export class SignupPage {
   private createForm() {
     this.form = this.formBuilder.group({
       userType: ['', Validators.required],
+      name: [''],
+      cpf: [''],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      password: ['', Validators.required]
     });
   }
 
